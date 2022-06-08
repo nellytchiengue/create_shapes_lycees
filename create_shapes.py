@@ -1,7 +1,6 @@
 '''
 Project purpose : 
-Create shapefiles of France High Schol (Lycees) with  data gouv and INSEE bdata
-
+Create shapefiles of France High Schol (Lycees) with  data gouv and INSEE statistics
 The DOM TOM are not included
 
 '''

@@ -5,6 +5,7 @@
 
 Project purpose : 
 Create shapefiles of France High Schol (Lycees) with  data gouv and INSEE statistics
+
 The DOM TOM are not included
 
 The Inputs are mainly the IRIS polygons and the x, y coordinates of each lycee

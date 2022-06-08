@@ -5,17 +5,11 @@ The DOM TOM are not included
 
 '''
 
-# from xml.etree.ElementInclude import include
 import datetime
-# from email.errors import InvalidMultipartContentTransferEncodingDefect
 import pandas as pd
 
 import geopandas as gpd
-# import pygeos
 import pyproj
-# from shapely.geometry import Point, Polygon
-# from shapely.ops import nearest_points
-
 
 
 # display all columns in df

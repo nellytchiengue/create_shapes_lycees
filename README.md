@@ -9,6 +9,9 @@ The DOM TOM are not included
 
 The Inputs are mainly the IRIS polygons and the x, y coordinates of each lycee
 
+The map show above represents the result. Which is area linked to each High school in France.
+The rule is : for each IRIS polygon find the nearest lycee then dissolve
+
 Input / Sources
 
 IRIS

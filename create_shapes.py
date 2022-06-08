@@ -148,7 +148,7 @@ df_lycees.columns.to_list()
 gdf_etablissements.info()
 gdf_etablissements.describe(include = "all")
 gdf_etablissements["code_commune"].unique()
-gdf_etablissements.columns.to_list()
+gdf_etablissements.columns.to_list() 
 
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -30,7 +30,9 @@ Academies geo data
 https://www.data.gouv.fr/fr/datasets/contours-geographiques-des-academies/
 
 Lycees geo data
+
 https://data.education.gouv.fr/explore/dataset/fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre
 
 Exams results of lycees
+
 https://data.education.gouv.fr/explore/dataset/fr-en-indicateurs-de-resultat-des-lycees-denseignement-general-et-technologique/table/

@@ -41,6 +41,7 @@ lycees_file_name ="fr-en-indicateurs-de-resultat-des-lycees-denseignement-genera
 lycees_file_path = data_folder + lycees_file_name
 print("lycees_file_path : " + lycees_file_path)
 
+shp_folder = "outputs\\shp\\"
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # IMPORT DATA
@@ -74,14 +75,14 @@ COLLEGES / Ecoles / Lycees
 # IMPORT IRIS
 # iris-geo-2018-frtot.zip
 print ( "Import IRIS...")
+
+# gdf_iris_all = gpd.read_file("iris-geo-2018-frtot.zip")
 gdf_iris_all = gpd.read_file(IRIS_file_path)
 gdf_iris_all
-print ( "...Import IRIS... step 1 ok")
+print ( "...Import IRIS --> OK")
 gdf_iris = gdf_iris_all
 gdf_iris
-# gdf_iris.plot(figsize = (24,10))
-# gdf_iris["CD_CMN_INSEE_GEO"] = gdf_iris["insee"].astype("str")
-
+gdf_iris.plot(figsize = (24,10))
 
 # IMPORT Communes
 # communes-20220101-shp.zip
@@ -106,6 +107,7 @@ gdf_academies
 # IMPORT etablissements geo
 # fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre.geojson
 print ( "Import etablissements...")
+# gdf_etablissements_all = gpd.read_file("fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre.geojson" )
 gdf_etablissements_all = gpd.read_file(etablissements_file_path)
 gdf_etablissements_all
 print ( "...Import etablissements --> OK ")
@@ -131,17 +133,17 @@ gdf_iris.info()
 gdf_iris.crs # Geographic 2D CRS: EPSG:4326
 gdf_etablissements.crs # Geographic 2D CRS: EPSG:4326
 
-# inspect a data value
-df_lycees.info()
-df_lycees.describe(include = "all")
-df_lycees[df_lycees["UAI"].isin(["0010878Z"])]
-df_lycees.columns.to_list()
-
-#  a mettre en fonction pour analyser df et gdf
+#  inspect gdf of schools
 gdf_etablissements.info()
 gdf_etablissements.describe(include = "all")
 gdf_etablissements["code_commune"].unique()
 gdf_etablissements.columns.to_list() 
+
+# inspect df of lycees ( = High School)
+df_lycees.info()
+df_lycees.describe(include = "all")
+df_lycees[df_lycees["UAI"].isin(["0010878Z"])]
+df_lycees.columns.to_list()
 
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -165,6 +167,8 @@ gdf_iris.crs # Geographic 2D CRS: EPSG:4326
 
 # Delete DOM TOM areas
 gdf_etablissements = gdf_etablissements[~gdf_etablissements["code_commune"].str.startswith('97')]
+
+# Delete entry without geometry
 gdf_etablissements = gdf_etablissements[gdf_etablissements["geometry"]!=None]
 gdf_etablissements
 
@@ -228,6 +232,14 @@ filtered_col_lycees = ['Etablissement',
                     'Valeur ajoutée du taux de mentions - Gnle'
                 ]
 df_lycees = df_lycees[filtered_col_lycees]
+
+# rename col in shorter names
+df_lycees["SUCCESS_R"] = df_lycees["Taux de reussite - Gnle"] 
+df_lycees["SUCCESS_R_VAL"] = df_lycees["Valeur ajoutee du taux de réussite - Gnle"]
+df_lycees["MENTIONS_R"] = df_lycees["Taux de mentions - Gnle"]
+df_lycees["MENTIONS_R_VAL"] = df_lycees["Valeur ajoutée du taux de mentions - Gnle"]
+
+
 df_lycees
 
 
@@ -259,16 +271,16 @@ gdf_etablissements.crs
 gdf_iris_lambert = gdf_iris.to_crs(epsg=27572) # (epsg=27572) # ("EPSG:27572") # Lambert
 gdf_etablissements_lambert = gdf_etablissements.to_crs(epsg=27572) # (epsg=27572) # ("EPSG:27572") # Lambert
 
-# Attribution of a lycee for each IRIS78
+# Attribution of a lycee for each IRIS
 print ("\n>>> START - Distance calculation and fit to IRIS to nearest points of Lycee - ")
 print( datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-# gdf_IRIS_merged_nearest = gdf_iris.sjoin_nearest(gdf_etablissements, distance_col="distances", how= "left") # prend tous les IRIS
-gdf_IRIS_merged_nearest = gdf_iris_lambert.sjoin_nearest(gdf_etablissements_lambert, distance_col="distances", how= "left") # prend tous les IRIS
+# gdf_IRIS_merged_nearest = gdf_iris.sjoin_nearest(gdf_etablissements, distance_col="distances", how= "left") # 
+gdf_IRIS_merged_nearest = gdf_iris_lambert.sjoin_nearest(gdf_etablissements_lambert, distance_col="distances", how= "left") 
 
 # display(gdf_IRIS_merged_nearest)
 # gdf_IRIS_merged_nearest.tail()
-print ("\n>>> END - Distance calculation " )
 print( datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+print ("\n>>> END - Distance calculation " )
 
 gdf_IRIS_merged_nearest
 gdf_IRIS_merged_nearest.crs
@@ -278,7 +290,8 @@ gdf_IRIS_merged_nearest.crs
 #  --------------------------------------------------------------------------------------
 #  Dissolve polygons for ech level and creation of Shapefiles
 #  --------------------------------------------------------------------------------------
-# remettre au format geo lat long avant export file shp
+
+# the previous lat logitude format is put again
 gdf_IRIS_merged_nearest_WGS84 = gdf_IRIS_merged_nearest.to_crs(pyproj.CRS.from_epsg(4326))
 gdf_IRIS_merged_nearest_WGS84
 
@@ -307,12 +320,12 @@ cols_COM = ['Annee'
             ,'libelle_academie'
             ,'code_region'
             ,'libelle_region'
-            ,'Taux de reussite - Gnle'
-            ,'Valeur ajoutee du taux de réussite - Gnle'
-            ,'Taux de mentions - Gnle'
-            ,'Valeur ajoutée du taux de mentions - Gnle'
-            , 'geometry'
-            , 'distances'
+            ,'SUCCESS_R'
+            ,'SUCCESS_R_VAL'
+            ,'MENTIONS_R'
+            ,'MENTIONS_R_VAL'
+            ,'geometry'
+            ,'distances'
     ]
 
 
@@ -323,7 +336,7 @@ gdf_IRIS_COM
 gdf_IRIS_COM.plot(figsize = (36,15))
 
 # create shapefile
-gdf_IRIS_COM .to_file('outputs\shp\IRIS_communes.shp')  
+gdf_IRIS_COM .to_file(shp_folder + 'IRIS_communes.shp')  
 
 
 #  --------------------------------------------------------------------------------------
@@ -343,23 +356,24 @@ cols_lycees = ['Annee'
             ,'libelle_region'
             ,'CODE_IRIS'
             ,'NOM_IRIS'
-            ,'Taux de reussite - Gnle'
-            ,'Valeur ajoutee du taux de réussite - Gnle'
-            ,'Taux de mentions - Gnle'
-            ,'Valeur ajoutée du taux de mentions - Gnle'
-            , 'geometry'
-            , 'distances'
+            ,'SUCCESS_R'
+            ,'SUCCESS_R_VAL'
+            ,'MENTIONS_R'
+            ,'MENTIONS_R_VAL'
+            ,'geometry'
+            ,'distances'
     ]
 
 
 gdf_IRIS_merged_nearest_WGS84[cols_lycees]
-gdf_IRIS_lycees = gdf_IRIS_merged_nearest_WGS84[cols_lycees].dissolve(by='UAI')
+# gdf_IRIS_lycees = gdf_IRIS_merged_nearest_WGS84[cols_lycees].dissolve(, aggfunc = 'sum') 
+gdf_IRIS_lycees = gdf_IRIS_merged_nearest_WGS84[cols_lycees].dissolve(by='UAI') 
 gdf_IRIS_lycees
 # gdf_IRIS_lycees.tail()
 gdf_IRIS_lycees.plot(figsize = (36,15))
 
 # create shapefile
-gdf_IRIS_lycees.to_file('outputs\shp\IRIS_lycees.shp')  
+gdf_IRIS_lycees.to_file(shp_folder + 'IRIS_lycees.shp')  
 
 
 
@@ -380,10 +394,10 @@ cols_departement = ['Annee'
             ,'libelle_academie'
             ,'code_region'
             ,'libelle_region'
-            ,'Taux de reussite - Gnle'
-            ,'Valeur ajoutee du taux de réussite - Gnle'
-            ,'Taux de mentions - Gnle'
-            ,'Valeur ajoutée du taux de mentions - Gnle'
+            ,'SUCCESS_R'
+            ,'SUCCESS_R_VAL'
+            ,'MENTIONS_R'
+            ,'MENTIONS_R_VAL'
             , 'geometry'
             , 'distances'
     ]
@@ -396,7 +410,7 @@ gdf_IRIS_departement
 gdf_IRIS_departement.plot(figsize = (36,15))
 
 # create shapefile
-gdf_IRIS_departement .to_file('outputs\shp\IRIS_departements.shp')  
+gdf_IRIS_departement .to_file(shp_folder + 'IRIS_departements.shp')  
 
 #  --------------------------------------------------------------------------------------
 #  polygons with same academie
@@ -415,12 +429,12 @@ cols_academies = ['Annee'
             ,'libelle_academie'
             ,'code_region'
             ,'libelle_region'
-            ,'Taux de reussite - Gnle'
-            ,'Valeur ajoutee du taux de réussite - Gnle'
-            ,'Taux de mentions - Gnle'
-            ,'Valeur ajoutée du taux de mentions - Gnle'
-            , 'geometry'
-            , 'distances'
+            ,'SUCCESS_R'
+            ,'SUCCESS_R_VAL'
+            ,'MENTIONS_R'
+            ,'MENTIONS_R_VAL'
+            ,'geometry'
+            ,'distances'
     ]
 
 
@@ -431,7 +445,7 @@ gdf_IRIS_academies
 gdf_IRIS_academies.plot(figsize = (36,15))
 
 # create shapefile
-gdf_IRIS_academies .to_file('outputs\shp\IRIS_academies.shp')  
+gdf_IRIS_academies .to_file(shp_folder + 'IRIS_academies.shp')  
 
 
 #  --------------------------------------------------------------------------------------
@@ -451,12 +465,12 @@ cols_regions = ['Annee'
             # ,'libelle_academie'
             ,'code_region'
             ,'libelle_region'
-            ,'Taux de reussite - Gnle'
-            ,'Valeur ajoutee du taux de réussite - Gnle'
-            ,'Taux de mentions - Gnle'
-            ,'Valeur ajoutée du taux de mentions - Gnle'
-            , 'geometry'
-            , 'distances'
+            ,'SUCCESS_R'
+            ,'SUCCESS_R_VAL'
+            ,'MENTIONS_R'
+            ,'MENTIONS_R_VAL'
+            ,'geometry'
+            ,'distances'
     ]
 
 
@@ -467,9 +481,5 @@ gdf_IRIS_regions
 gdf_IRIS_regions.plot(figsize = (36,15))
 
 # create shapefile
-gdf_IRIS_regions.to_file('outputs\shp\IRIS_regions.shp')  
-
-
-
-
+gdf_IRIS_regions.to_file(shp_folder + 'IRIS_regions.shp')  
 

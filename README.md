@@ -4,7 +4,8 @@
 
 
 Project purpose : 
-1. Create shapefiles of France High School (Lycees) with Data Gouv and INSEE statistics
+based on geographical france data with Data Gouv and INSEE statistics websites
+1. create shapefiles of France High School (Lycees)
     -> create_shapes.py
 2. create "simples" interactive map based on this shapefile
     -> create_map.py

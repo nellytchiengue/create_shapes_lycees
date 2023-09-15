@@ -2,9 +2,10 @@
 
 ![image](https://user-images.githubusercontent.com/105495334/172506658-f718452d-0f96-4df1-8d07-384ae0975aa5.png)
 
+Project purpose: create shapefiles in Python.
+Data input: geographical french data with Data Gouv and INSEE statistics websites.
 
-Project purpose : 
-based on geographical france data with Data Gouv and INSEE statistics websites
+Steps:
 1. create shapefiles of France High School (Lycees)
     -> create_shapes.py
 2. create "simples" interactive map based on this shapefile

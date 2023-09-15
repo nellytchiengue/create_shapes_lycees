@@ -40,3 +40,7 @@ https://data.education.gouv.fr/explore/dataset/fr-en-adresse-et-geolocalisation-
 Exams results of lycees
 
 https://data.education.gouv.fr/explore/dataset/fr-en-indicateurs-de-resultat-des-lycees-denseignement-general-et-technologique/table/
+
+Full description in article:
+https://medium.com/@nellytchiengue/build-shapefiles-for-custom-map-with-python-and-geopandas-d92f424095f2
+
